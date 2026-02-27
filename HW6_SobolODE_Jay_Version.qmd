@@ -37,7 +37,7 @@ We source the differential equation function that defines forest growth (the der
 source(here("R/dforestgrowth.R"))
 
 # Show the equation
-print(body(dforestgrowth))
+print(dforestgrowth)
 ```
 
 ### Running the Model with Initial Parameters
@@ -340,4 +340,6 @@ sens_C_100$T
 ### Conclusion
 
 In 2-3 sentences, discuss what the results of your simulation might mean. (For example think about how what parameters climate change might influence).
+
+Based on our Sobol indices for the max forest size at 100 years, we can see that almost all of the variation is due to the growth rate before canopy closure threshold. We can assume that external factors such as climate change that could influence max forest size after 100 years of growth will be almost entirely due to its influence on pre-canopy closure threshold growth rate.
 
