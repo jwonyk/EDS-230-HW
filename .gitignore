@@ -1,8 +1,22 @@
-# Ignore Documents
-document/
+# Quarto output
+docs/
+.quarto/
+*_files/
+*_cache/
+.DS_Store
+
+# execution cache
+*_files/
+*_cache/
+
+# system
+.DS_Store
 
 # Ignore Images
 images/
+
+# Ignore freeze data
+_freeze/
 
 # History files
 .Rhistory
@@ -53,3 +67,6 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+/.quarto/
+**/*.quarto_ipynb
