@@ -10,6 +10,8 @@ library(here)
 
 ```{r}
 source(here("R", "lotvmodK.R"))
+
+print(lotvmodK)
 ```
 
 ```{r}
@@ -17,7 +19,7 @@ source(here("R", "lotvmodK.R"))
 currpop <- c(prey = 10, pred = 1)
 
 # set parameter list
-pars <- c(rprey = 0.1, alpha = 0.6, eff = 0.8, pmort = 0.4, K = 20, hunt = 0.5)
+pars <- c(rprey = 0.95, alpha = 0.01, eff = 0.6, pmort = 0.4, K = 2000, hunt = 0.5, threshold = 20)
 
 # times when you want to evaluate
 days <- seq(from = 1, to = 500)
@@ -57,9 +59,10 @@ rprey <- runif(min = 0.01, max = 0.3, n = np)
 alpha <- runif(min = 0.1, max = 0.4, n = np)
 eff <- rnorm(mean = 0.3, sd = 0.01, n = np)
 pmort <- runif(min = 0.01, max = 0.45, n = np)
-hunt <- runif(min = 0.01, max = 0.5, n = np)
+hunt <- runif(min = 0.01, max = 1, n = np)
+threshold <- runif(min = 1, max = 300, n = np)
 
-X1 <- cbind.data.frame(rprey = rprey, K = K, alpha = alpha, eff = eff, pmort = pmort, hunt = hunt)
+X1 <- cbind.data.frame(rprey = rprey, K = K, alpha = alpha, eff = eff, pmort = pmort, hunt = hunt, thresh = thresh)
 
 # repeat to get our second set of samples
 np <- 200
@@ -68,10 +71,10 @@ rprey <- runif(min = 0.01, max = 0.3, n = np)
 alpha <- runif(min = 0.1, max = 0.4, n = np)
 eff <- rnorm(mean = 0.3, sd = 0.01, n = np)
 pmort <- runif(min = 0.01, max = 0.45, n = np)
-hunt <- runif(min = 0.01, max = 0.5, n = np)
+hunt <- runif(min = 0.01, max = 1, n = np)
+threshold <- runif(min = 1, max = 300, n = np)
 
-X2 <- cbind.data.frame(rprey = rprey, K = K, alpha = alpha, eff = eff, pmort = pmort, hunt = hunt)
-
+X2 <- cbind.data.frame(rprey = rprey, K = K, alpha = alpha, eff = eff, pmort = pmort, hunt = hunt, thresh = thresh)
 
 # create our sobel object and get sets ofparameters for running the model
 sens_PP <- sobolSalt(model = NULL, X1, X2, nboot = 300)

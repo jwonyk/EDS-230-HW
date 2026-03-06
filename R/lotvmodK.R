@@ -25,7 +25,7 @@
 lotvmodK <- function(t, pop, pars) {
   with(as.list(c(pars, pop)), {
     
-    if (prey >= 4) {
+    if (prey >= threshold) {
       dprey <- rprey * (1 - prey / K) * prey - alpha * prey * pred - hunt * prey
     } else {
       dprey <- rprey * (1 - prey / K) * prey - alpha * prey * pred
