@@ -3,11 +3,13 @@
 #' function computes the rate of change of populations in a predictor prey interaction
 #' @param t  time (days)
 #' @param pop datatype list initial conditions; list with two values prey=number of prey and pred=number of predictor
-#' @param pars datatype list  coefficient in Lotka-Voltera pars$rprey, pars$alpha, pars$eff, par$pmort, par$hunt
+#' @param pars datatype list coefficient in Lotka-Voltera pars$rprey, pars$alpha, pars$eff, pars$pmort, pars$hunt, pars$threshold
 #'  \emph{rprey} is growth rate of prey population;
-#'  \emph{eff} is the rate of ingestion of prey by predators
-#'  \emph{alpha} is a interaction coefficient (higher values greater interaction
-# ’  \emph{pmort}  mortality rate of predictor population
+#'  \emph{alpha} is an interaction coefficient (higher values = greater interaction);
+#'  \emph{eff} is the rate of ingestion of prey by predators;
+#'  \emph{pmort} is the mortality rate of predator population;
+#'  \emph{hunt} is the hunting rate applied to prey (proportion removed per day);
+#'  \emph{threshold} is the minimum prey population required before hunting is permitted
 #' @examples
 #' lotvod(t = 1, pop = list(1, 2), pop = list(0.5, 0.3, 0.2, 0.2))
 #'

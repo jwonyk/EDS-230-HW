@@ -1,11 +1,18 @@
 ---
-title: "HW7_twovariable_dynamic"
-format: html
-editor_options: 
-  chunk_output_type: console
+title: "EDS 230 Homework 7: Two Variables Dynamic"
+format: pdf
+author: Leela Dixit, Jay Kim, Richard Montes Lemus
+execute:
+  warning: false
+  message: false
+  freeze: auto
 ---
 
-```{r}
+```{r setup, include=FALSE}
+#| message: false
+#| warning: false
+#| code-fold: true
+
 library(tidyverse)
 library(here)
 library(deSolve)
@@ -13,51 +20,86 @@ library(sensitivity)
 library(ggpubr)
 ```
 
-```{r}
-source(here("R", "lotvmodK.R"))
+# Part 1: Building the Hunting Model
 
+## Loading Modified Predator-Prey Model
+
+This model extends the classic predator-prey equations by adding `hunt` (the hunting rate applied to prey) and `threshold` (the minimum prey population required before hunting is permitted). Hunting only occurs when prey exceeds the threshold, ensuring we never hunt more prey than exist.
+
+```{r load-model}
+#| message: false
+#| warning: false
+
+source(here("R", "lotvmodK.R"))
 print(lotvmodK)
 ```
 
-```{r}
-# initial conditions
+## Running the Baseline Model
+
+Here we run the model with the best-guess parameters to verify behavior before the sensitivity analysis: `rprey = 0.95`, `alpha = 0.01`, `eff = 0.6`, `pmort = 0.4`, `K = 2000`, with a moderate hunting rate of 0.5 and a threshold of 20.
+
+```{r baseline-setup}
+#| message: false
+#| warning: false
+
+# Initial conditions
 currpop <- c(prey = 10, pred = 1)
 
-# set parameter list
+# Set parameter list
 pars <- c(rprey = 0.95, alpha = 0.01, eff = 0.6, pmort = 0.4, K = 2000, hunt = 0.5, threshold = 20)
 
-# times when you want to evaluate
+# Times when you want to evaluate
 days <- seq(from = 1, to = 500)
 
-# run our differential equation solver
+# Run our differential equation solver
 res <- ode(func = lotvmodK, y = currpop, times = days, parms = pars)
 
-# rearrange for plotting
+# Rearrange for plotting
 resl <- as.data.frame(res) %>% pivot_longer(-time, names_to = "species", values_to = "pop")
+```
 
-# graph both populations over time
+## Visualizing Baseline Population Dynamics
+
+The time series shows how both populations evolve over 500 days. The phase-plane plot reveals whether the system settles into a stable cycle or not. 
+
+```{r baseline-plots}
+#| message: false
+#| warning: false
+
+# Graph both populations over time
 p1 <- ggplot(resl, aes(time, pop, col = species)) +
   geom_line()
 p1
 
-# also look at relationships between preditor and prey population and use color for time
+# Also look at relationships between preditor and prey population and use color for time
 # I will remove the legend here to make it easier to see
-p2 <- ggplot(as.data.frame(res), aes(pred, prey, col = (round(time / 10)))) +
+p2 <- ggplot(as.data.frame(res), aes(pred, prey, 
+                                     col = (round(time / 10)))) +
   geom_point() +
   theme(legend.position = "none")
 p2
-p2 <- ggplot(as.data.frame(res), aes(pred, prey, col = as.factor(round(time / 10)))) +
+
+p2 <- ggplot(as.data.frame(res), aes(pred, prey, 
+                                     col = as.factor(round(time / 10)))) +
   geom_point() +
   theme(legend.position = "none")
 p2
+
 ggarrange(p1, p2)
 ```
 
-Sobol Sensitivity Testing
+## Preliminary Sobol Sensitivity Analysis (Exploratory)
 
-```{r}
-# want to learn about sensitivity to growth rate (r) and carrying capacity
-# set the number of parameters
+Before the focused Part 2 analysis, we run a broad Sobol sensitivity across all parameters to understand which drive prey population outcomes most. Parameters are sampled over wide exploratory ranges.
+
+### Setting Up Parameter Samples
+
+```{r sobol-setup-part-1}
+#| message: false
+#| warning: false
+
+# Want to learn about sensitivity to growth rate (r) and carrying capacity
+# Set the number of parameters
 np <- 200
 K <- rnorm(mean = 150, sd = 20, n = np)
 rprey <- runif(min = 0.01, max = 0.3, n = np)
@@ -69,7 +111,7 @@ threshold <- runif(min = 1, max = 300, n = np)
 
 X1 <- cbind.data.frame(rprey = rprey, K = K, alpha = alpha, eff = eff, pmort = pmort, hunt = hunt, thresh = threshold)
 
-# repeat to get our second set of samples
+# Repeat to get our second set of samples
 np <- 200
 K <- rnorm(mean = 150, sd = 20, n = np)
 rprey <- runif(min = 0.01, max = 0.3, n = np)
@@ -81,36 +123,56 @@ threshold <- runif(min = 1, max = 300, n = np)
 
 X2 <- cbind.data.frame(rprey = rprey, K = K, alpha = alpha, eff = eff, pmort = pmort, hunt = hunt, thresh = threshold)
 
-# create our sobel object and get sets of parameters for running the model
+# Create our sobel object and get sets of parameters for running the model
 sens_PP <- sobolSalt(model = NULL, X1, X2, nboot = 300)
 
-# name parameter sets...
-colnames(sens_PP$X) <- c("rprey", "K", "alpha", "eff", "pmort", "hunt", "threshold")
+# Name parameter sets...
+colnames(sens_PP$X) <- c("rprey", "K", "alpha", "eff", 
+                         "pmort", "hunt", "threshold")
+```
 
-# our metrics
-# lets say we  want the maximum and minimum  of both predator and prey
+### Metrics and Wrapper Functions
 
+`compute_metrics` extracts max and min prey population from a model run. `p_wrapper` runs the ODE for a single parameter set and returns these metrics.
+
+```{r sobol-metric-function}
+#| message: false
+#| warning: false
+
+# For our metrics we want the maximum and minimum of both predator and prey
 compute_metrics <- function(result) {
+  
   maxprey <- max(result$prey)
   minprey <- min(result$prey)
   return(list(maxprey = maxprey, minprey = minprey))
+  
 }
 
-
-
-# build a wrapper function
-
-p_wrapper <- function(rprey, alpha, eff, pmort, K, hunt, currpop, threshold, days, func) {
-  parms <- list(rprey = rprey, alpha = alpha, eff = eff, pmort = pmort, K = K, hunt = hunt, threshold = threshold)
+# Build a wrapper function
+p_wrapper <- function(rprey, alpha, eff, pmort, K, hunt, 
+                      currpop, threshold, days, func) {
+  
+  parms <- list(rprey = rprey, alpha = alpha, eff = eff, 
+                pmort = pmort, K = K, hunt = hunt, threshold = threshold)
   result <- ode(y = currpop, times = days, func = func, parms = parms)
   colnames(result) <- c("time", "prey", "pred")
-  # get metrics
+  
+  # Get metrics
   metrics <- compute_metrics(as.data.frame(result))
+  
 }
 ```
 
-```{r}
-# run our model for all parameters and extract the results
+### Results
+
+```{r sobol-run-part-1}
+#| message: false
+#| warning: false
+#| eval: true
+#| echo: true
+#| output: false
+
+# Run our model for all parameters and extract the results
 currpop <- c(prey = 1, pred = 1)
 days <- seq(from = 1, to = 500)
 allresults <- as.data.frame(sens_PP$X) %>% 
@@ -125,47 +187,57 @@ pmort <- runif(min = 0.01, max = 0.45, n = np)
 hunt <- runif(min = 0.01, max = 1, n = np)
 threshold <- runif(min = 1, max = 50, n = np)
 
-# take results back to unlisted form
+# Take results back to unlisted form
 allres <- allresults %>% map_dfr(`[`, c("maxprey", "minprey"))
+```
 
-# range of response across parameter uncertainty
+```{r result-plots}
+#| message: false
+#| warning: false
+
+# Range of response across parameter uncertainty
 allresl <- allres %>% gather(key = "metric", value = "pop")
 ggplot(allresl, aes(metric, pop)) +
   geom_boxplot()
 
-# dealing with different scales
+# Dealing with different scales
 ggplot(allresl, aes(metric, pop, col = metric)) +
   geom_boxplot() +
   facet_wrap(~metric, scales = "free")
-# plot cummulative densities
 
+# Plot cumulative densities
 ggplot(allresl, aes(pop, col = metric))  +
   stat_ecdf(geom = "line") +
   facet_wrap(~metric, scales = "free")
 ```
 
-# Part 2
 
-## Exploring how different hunting levels and uncertainty/variation in parameters in our model affect the population stability
+# Part 2: Exploring Hunting Levels and Population Stability
 
-1) Use Sobol to sample a variety parameters and hunting rates
+Here we formally explore how hunting rate, combined with biological parameter uncertainty, affects long-term stability. We use Sobol sampling to test many combinations and apply a stability metric to each run. We will explore how different hunting levels and uncertainty/variation in parameters in our model affect the population stability.
 
-```{r}
+## 1) Use Sobol to Sample a Variety Parameters and Hunting Rates
+
+Biological parameters are sampled with normal distributions centered on the best-guess values (SD = 10% of mean). Hunting rate is sampled uniformly from 0–0.5; capped at 0.5 since removing more than 50% of prey per day is ecologically unrealistic. Threshold is fixed at 20 to isolate the hunting rate effect.
+
+```{r sobol-setup-part-2}
+#| message: false
+#| warning: false
+
 # Create first set of parameter and hunting samples 
 np <- 200 # Number of parameter sets 
 
 # Sample biological parameters based on best guess provided in instructions
 # Use best guess as the mean with small SD to represent parameter uncertainty
-K <- rnorm(mean = 2000, sd = 200,  n = np)  
-rprey <- rnorm(mean = 0.95, sd = 0.1,  n = np)  
-alpha <- rnorm(mean = 0.01, sd = 0.001,n = np)  
-eff <- rnorm(mean = 0.6,  sd = 0.06, n = np)  
-pmort <- rnorm(mean = 0.4,  sd = 0.04, n = np)  
-
+K <- rnorm(mean = 2000, sd = 200, n = np)  
+rprey <- rnorm(mean = 0.95, sd = 0.1, n = np)  
+alpha <- rnorm(mean = 0.01, sd = 0.001, n = np)  
+eff <- rnorm(mean = 0.6, sd = 0.06, n = np)  
+pmort <- rnorm(mean = 0.4, sd = 0.04, n = np)  
 
 # Sample hunt uniformly from 0 to 0.5 — no best guess so full range explored
 # Capped at 0.5 because removing more than 50% of prey per day is unrealistic
-hunt <- runif(min = 0.0, max = 0.5,   n = np) 
+hunt <- runif(min = 0.0, max = 0.5, n = np) 
 
 # Keep threshold fixed to isolate affect of hunt
 threshold <- 20
@@ -185,67 +257,92 @@ alpha <- rnorm(mean = 0.01, sd = 0.001,n = np)
 eff <- rnorm(mean = 0.6,  sd = 0.06, n = np)  
 pmort <- rnorm(mean = 0.4,  sd = 0.04, n = np)  
 
-
 # Sample hunt uniformly from 0 to 0.5, no best guess so full range explored
 # Capped at 0.5 because removing more than 50% of prey per day is unrealistic
-hunt <- runif(min = 0.0, max = 0.5,   n = np) 
+hunt <- runif(min = 0.0, max = 0.5, n = np) 
 
 # Keep threshold fixed to isolate affect of hunt
 threshold <- 20
 
 # Create second table with parameter and hunting samples
-prey_pop_parameters2 <- cbind.data.frame(rprey = rprey, K = K, alpha = alpha, eff = eff, pmort = pmort, hunt = hunt, thresh = rep(20, np))
+prey_pop_parameters2 <- cbind.data.frame(rprey = rprey, K = K, 
+                                         alpha = alpha, eff = eff, 
+                                         pmort = pmort, hunt = hunt, 
+                                         thresh = rep(20, np))
 
 # Use two tables to combine different parameter and hunting rates that will 
-# be used for running the model   
-sens_PP <- sobolSalt(model = NULL, prey_pop_parameters1, prey_pop_parameters2, nboot = 100)   
+# Be used for running the model   
+sens_PP <- sobolSalt(model = NULL, prey_pop_parameters1, 
+                     prey_pop_parameters2, nboot = 100)   
 
 # Name parameter sets
-colnames(sens_PP$X) <- c("rprey", "K", "alpha", "eff", "pmort", "hunt", "threshold")
+colnames(sens_PP$X) <- c("rprey", "K", "alpha", "eff", 
+                         "pmort", "hunt", "threshold")
 
 ```
 
+## 2) Stability Metric and Wrapper Function 
 
-2) Compute metric for stability and create wrapper function 
-```{r}
+**Stability metric:** A run is stable if the final prey population at day 500 exceeds 50. Below that, the run returns `NA` (unstable). We focus on prey because predator persistence depends on prey survival — if prey persist above 50, the ecosystem is likely viable.
+
+```{r stability-metric}
+#| message: false
+#| warning: false
 
 # Create a metric function to define stability 
 compute_metrics <- function(result) {
+  
   result <- as.data.frame(result)
   final_prey <- tail(result$prey, 1)
   
 # Stability is defined as having an ending prey population above 50
    if (final_prey > 50) { 
+     
      return(list(final_prey = final_prey))
+     
    } else {
+     
      return(list(final_prey = NA)) # Return NA if prey population is below 50
+     
    }
+  
 }
 
-# Wrapper function to run the ODE model for a single parameter set and return stability metric (assigned as stable or unstable)
-p_wrapper <- function(rprey, alpha, eff, pmort, K, hunt, currpop, threshold, days, func) {
-  parms <- list(rprey = rprey, alpha = alpha, eff = eff, pmort = pmort, K = K, 
-                hunt = hunt, threshold = threshold)
+# Wrapper function to run the ODE model for a single parameter set & 
+# Return stability metric (assigned as stable or unstable)
+p_wrapper <- function(rprey, alpha, eff, pmort, K, hunt, 
+                      currpop, threshold, days, func) {
+  
+  parms <- list(rprey = rprey, alpha = alpha, eff = eff, 
+                pmort = pmort, K = K, hunt = hunt, threshold = threshold)
   result <- ode(y = currpop, times = days, func = func, parms = parms)
   colnames(result) <- c("time", "prey", "pred")
   metrics <- compute_metrics(as.data.frame(result))
   return(metrics)
+  
 }
-
 ```
 
-3) Use parameter sets to predict prey population and assess stability
+## 3) Running the Model Across All Parameter Sets
 
-```{r, warning=FALSE, message=FALSE, results='hide'}
+```{r sobol-run-part-2, warning=FALSE, message=FALSE, results='hide'}
+#| message: false
+#| warning: false
+#| eval: true
+#| echo: true
+#| output: false
+
 # Run our model for all parameters and extract the results
 currpop <- c(prey = 200, pred = 5) # Define starting prey and pred population
 days <- seq(from = 1, to = 500)
 allresults <- as.data.frame(sens_PP$X) %>% 
     pmap(p_wrapper, currpop = currpop, days = days, func = lotvmodK)
-
 ```
 
-```{r}
+```{r sobol-results-table}
+#| message: false
+#| warning: false
+
 # Put model results in data frame 
 allres <- allresults %>% map_dfr(`[`, c("final_prey"))
 
@@ -254,13 +351,17 @@ final_table <- bind_cols(as.data.frame(sens_PP$X), allres)
 
 # Filter to only rows where parameter set values led to stability
 stable_only <- final_table %>% filter(!is.na(final_prey))
-
 stable_only
 ```
 
-4) Compare parameter distributions between stable and unstable runs
+## 4) Compare Parameter Distributions between Stable and Unstable Runs
 
-```{r}
+These boxplots compare each parameter between stable and unstable runs. Parameters with minimal overlap between groups are the strongest drivers of stability.
+
+```{r stability-boxplots}
+#| message: false
+#| warning: false
+
 # Create separate box plot per parameter
 final_table %>%
   mutate(stable = !is.na(final_prey)) %>%
@@ -279,11 +380,9 @@ final_table %>%
   I tested different hunting levels by including in my sobol a uniform sampling of values for hunting rate. This ranged from 0 - 0.5. I made sure to cap the hunting rate at 0.5 because removing more than 50% of prey per day is unrealistic. Each of these hunting levels is associated with a stable or unstable population. 
   
   I defined a stability metric by modifying my compute metric function so it changed the value in final_prey column to NA if the prey population at the end of the simulation was less than 50. If the final_prey value was above 50 it was left alone. I chose this stability metric because setting 50 as the prey population threshold for stability seems large enough to sustain prey reproduction. I did not use predator population in this stability metric because I thought prey population would capture predator population well since predators rely on prey as a food source. 
-  
+
 **c. How you estimated sustainable hunting level and a brief explanation of why you chose the metric you did**  
 
 I estimated a sustainable hunting level by plotting the distribution of hunting rate for all parameter sets labeled as stable vs unstable. For parameter sets that led to a stable population, meaning the prey population was above 50 at the end of the simulation, the hunting rate was a bit below 0.2. Therefore, I'd recommend keeping hunting at or below 0.2 to maintain a viable prey population.
 
 I chose boxplots comparing stable vs unstable runs because they let me see at a glance how each parameter differs between the two groups. This was useful for confirming that hunt was the main driver of stability and not some other parameter like K or alpha, which showed much less separation between stable and unstable runs.
-
-
