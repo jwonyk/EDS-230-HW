@@ -1,0 +1,17 @@
+---
+title: "final_assignment"
+format: html
+---
+For the course of the Meds Environmental Modeling class at UCSB, we have learned the step-by-step process of developing, testing, and analyzing results of a model for environmental problem solving contexts. In this project, we will develop a clear, well-structured plan for using a model in a hypothetical environmental context.
+
+## Modeling Question
+
+## Conceptual Model
+
+## Model Design
+
+## Analysis Plan
+
+## Assumptions
+
+
