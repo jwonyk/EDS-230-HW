@@ -13,25 +13,63 @@ Inflammatory bowel disease and irritable bowel syndrome affect millions of peopl
 
 ## Model Design
 
-Microbiome Activity:
+Our model consists of 3 submodels, one that will predict microbiome activity based on probiotic supplementation, one that will take that microbiome activity and generate a CRP value, and another submodel that takes the predicted CRP and calculates disease risk.
 
-Inputs: Dietary fiber, demographic data (age, sex, etc), antiobiotic use, calorie intake, probiotic supplement
+### ***Microbiome Activity:*** 
 
-Outputs: Microbe count, disease risk
+**Inputs**:
 
-Type of Model: ??????????
+-   Dietary fiber
 
-Disease Risk:
+-   Demographic data (age, sex, etc)
 
-Inputs: Microbiome Activity, demographic data (age, sex, etc.), disease activity (if any)
+-   Antiobiotic use
 
-Outputs: CRP levels, disease risk
+-   Calorie intake
 
-Type of Model: ??????????????
+-   Probiotic supplement
 
-This hypothetical model was inspired by the work done by \_\_\_\_\_\_\_.
+**Outputs**:
 
-In order to test model performance, we will first test the model with a data set (source: \_\_\_\_) consistent of around 400 sample units with information of disease status and diet (fiber, protein, etc) over 26 years. We can input this data set (diet, demographic data, calorie intake, antibiotic use) into our model without including probiotics as a metric, and our output of disease status can be interpolated into risk and should look appropriate.
+-   Microbe count
+
+### ***CRP:***
+
+Inputs:
+
+-   Microbiome activity (previous model)
+
+-   Demographic data (age, sex, etc)
+
+-   Antibiotic use
+
+-   Calorie intake
+
+Outputs:
+
+-   CRP
+
+### ***Disease risk:*** 
+
+**Inputs**:
+
+-   Microbiome activity (from previous model)
+
+-   CRP (from previous model)
+
+-   Demographic data (age, sex, etc.)
+
+-   Disease activity (if any)
+
+**Outputs**:
+
+-   Disease risk
+
+All of these models will be put together in a wrapper to fully calculate disease risk based on probiotic use input. They are all forms of mathematical, deterministic and static models.
+
+This hypothetical model was inspired by the work done by Ma et. al. 2021.
+
+In order to test model performance, we will first test the model with a data set (source: Ashwin et. al 2013) consistent of around 400 sample units with information of disease status and diet (fiber, protein, etc) over 26 years. We can input this data set (diet, demographic data, calorie intake, antibiotic use) into our model without including probiotics as a metric, and our output of disease status can be interpolated into risk and should look appropriate.
 
 ## Analysis Plan
 
@@ -39,4 +77,11 @@ In order to answer our question of how disease risk is influenced by probiotic s
 
 ## Assumptions
 
-We are assuming that the gut microbiome, and ONLY the gut microbiome, are contributing to disease risk reduction. While we include other parameters into our model, ultimately they all contribute to the gut microbiome which we assume directly influences disease risk. While there are certainly other factors, they are not included in this model. We are also assuming CRP as a proxy for disease risk. Finally, we are not including any medication being taken by those with the disease that may be influencing disease activity significantly.
+We are assuming that the gut microbiome, and ONLY the gut microbiome, are contributing to disease risk reduction. While we include other parameters into our model, ultimately they all contribute to the gut microbiome which we assume directly influences disease risk. While there are certainly other factors, they are not included in this model. We are also assuming CRP as a proxy for disease risk. We are not taking into account time factors, such as any trends in probiotic use over time or fluctuations of health/age/disease activity over time, and rather assessing the cummulative impact of probiotics on disease risk. Finally, we are not including any medication being taken by those with the disease that may be influencing disease activity significantly.
+
+## Sources
+
+Ma, W., Nguyen, L.H., Song, M. et al. Dietary fiber intake, the gut microbiome, and chronic systemic inflammation in a cohort of adult men. Genome Med 13, 102 (2021). https://doi.org/10.1186/s13073-021-00921-y
+
+Ashwin N. Ananthakrishnan, Hamed Khalili, Gauree G. Konijeti, Leslie M. Higuchi, Punyanganie de Silva, Joshua R. Korzenik, Charles S. Fuchs, Walter C. Willett, James M. Richter, Andrew T. Chan,
+A Prospective Study of Long-term Intake of Dietary Fiber and Risk of Crohn's Disease and Ulcerative Colitis, Gastroenterology, 145-5, 2013, 970-977, 0016-5085, https://doi.org/10.1053/j.gastro.2013.07.050
