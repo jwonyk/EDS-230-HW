@@ -12,9 +12,6 @@ docs/
 # system
 .DS_Store
 
-# Ignore Images
-images/
-
 # Ignore freeze data
 _freeze/
 
