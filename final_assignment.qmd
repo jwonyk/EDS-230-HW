@@ -3,28 +3,40 @@ title: "final_assignment"
 format: html
 ---
 
-For the course of the Meds Environmental Modeling class at UCSB, we have learned the step-by-step process of developing, testing, and analyzing results of a model for environmental problem solving contexts. In this project, we will develop a clear, well-structured plan for using a model in a hypothetical environmental context.
+For the course of the MEDS Environmental Modeling class at UCSB, we have learned the step-by-step process of developing, testing, and analyzing results of a model for environmental problem solving contexts. In this project, we will develop a clear, well-structured plan for using a model in a hypothetical environmental context.
 
 ## Modeling Question
 
-Inflammatory bowel disease and irritable bowel syndrome affect millions of people worldwide, impacting quality of life and health outcomes. There is research indicating a healthy gut microbiome can both decrease symptoms and perhaps decrease risk of developing either disease. We are interested in the impact of probiotic Kefir supplements on risk of inflammatory bowel disease and irritable bowel syndrome. Kefir increases the gut microbiome, which is thought to decrease disease risk. We will use a modeling framework to examine the relationship between a probiotic supplement and risk reduction by finding the optimal supplement intake for an increase in gastrointestinal track microbiome, and how much microbiome activity is necessary for disease risk reduction.
+Inflammatory bowel disease and irritable bowel syndrome affect millions of people worldwide, impacting quality of life and health outcomes. There is research indicating a healthy gut microbiome can both decrease symptoms and perhaps decrease risk of developing either disease. We are interested in the impact of probiotic Kefir supplements on risk of inflammatory bowel disease and irritable bowel syndrome. Kefir increases the gut microbiome, which is thought to decrease disease risk, specifically by increase in c-reactive protein (CRP). We will use a modeling framework to examine the relationship between a probiotic supplement and risk reduction by finding the optimal supplement intake for an increase in gastrointestinal track microbiome, and how much microbiome activity is necessary for disease risk reduction.
 
 ## Conceptual Model
 
 ## Model Design
 
-Inputs:
+Microbiome Activity:
 
-Parameters:
+Inputs: Dietary fiber, demographic data (age, sex, etc), antiobiotic use, calorie intake, probiotic supplement
 
-Outputs:
+Outputs: Microbe count, disease risk
 
-Type of Model:
+Type of Model: ??????????
+
+Disease Risk:
+
+Inputs: Microbiome Activity, demographic data (age, sex, etc.), disease activity (if any)
+
+Outputs: CRP levels, disease risk
+
+Type of Model: ??????????????
 
 This hypothetical model was inspired by the work done by \_\_\_\_\_\_\_.
 
-In order to test model performance, we will first test the model with a data set (source: \_\_\_\_) consistent of around 400 sample units with information of disease status and diet (fiber, protein, etc) over 26 years. We can input this data set (diet, specifically) into our model without including probiotics as a metric, and our output of disease status can be interpolated into risk and should look appropriate.
+In order to test model performance, we will first test the model with a data set (source: \_\_\_\_) consistent of around 400 sample units with information of disease status and diet (fiber, protein, etc) over 26 years. We can input this data set (diet, demographic data, calorie intake, antibiotic use) into our model without including probiotics as a metric, and our output of disease status can be interpolated into risk and should look appropriate.
 
 ## Analysis Plan
 
+In order to answer our question of how disease risk is influenced by probiotic supplementation, we would want to implement our model with varying levels of probiotic and first see how disease risk responds. Do we expect CRP to increase exponentially and level off, or perhaps follow a normal growth rate path? We can vary all parameters for every level of probiotic supplementation through sensitivity testing with Sobol to investigate how different demographics may respond differently to probiotic supplementation. We would vary parameters based on literature and data used for validation testing. Sensitivity of each parameter can be visualized individually against disease risk, along with sobol indices produced to assess parameter importance to disease risk. Sampled parameter sets can be visualized as a line graph with probiotic use of the x axis and disease risk on the y axis. Ideally, we will find an optimal probiotic supplementation that provides the best risk reduction.
+
 ## Assumptions
+
+We are assuming that the gut microbiome, and ONLY the gut microbiome, are contributing to disease risk reduction. While we include other parameters into our model, ultimately they all contribute to the gut microbiome which we assume directly influences disease risk. While there are certainly other factors, they are not included in this model. We are also assuming CRP as a proxy for disease risk. Finally, we are not including any medication being taken by those with the disease that may be influencing disease activity significantly.
