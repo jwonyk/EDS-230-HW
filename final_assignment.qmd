@@ -1,6 +1,7 @@
 ---
-title: "final_assignment"
-format: html
+title: "EDS 230 - Final Assignment"
+format: pdf
+author: "Leela Dixit, Jay Kim, Richard Montes Lemus"
 ---
 
 For the course of the MEDS Environmental Modeling class at UCSB, we have learned the step-by-step process of developing, testing, and analyzing results of a model for environmental problem solving contexts. In this project, we will develop a clear, well-structured plan for using a model in a hypothetical environmental context.
@@ -78,7 +79,7 @@ In order to answer our question of how GI disease risk is influenced by probioti
 
 ## Assumptions
 
-We are assuming that the gut microbiome, and ONLY the gut microbiome, are contributing to disease risk reduction. While we include other parameters into our model, ultimately they all contribute to the gut microbiome which we assume directly influences disease risk. While there are certainly other factors, they are not included in this model. We are also assuming CRP as a proxy for disease risk. We are not taking into account time factors, such as any trends in probiotic use over time or fluctuations of health/age/disease activity over time, and rather assessing the cummulative impact of probiotics on disease risk. Finally, we are not including any medication being taken by those with the disease that may be influencing disease activity significantly.
+We are assuming that the gut microbiome, and ONLY the gut microbiome, are contributing to disease risk reduction. While we include other parameters into our model, ultimately they all contribute to the gut microbiome which we assume directly influences disease risk. While there are certainly other factors, they are not included in this model. We are not taking into account time factors, such as any trends in probiotic use over time or fluctuations of health/age/disease activity over time, and rather assessing the cummulative impact of probiotics on disease risk. Finally, we are not including any medication being taken by those with the disease that may be influencing disease activity significantly.
 
 ## Sources
 
