@@ -7,15 +7,15 @@ For the course of the MEDS Environmental Modeling class at UCSB, we have learned
 
 ## Modeling Question
 
-Inflammatory bowel disease (IBD) and irritable bowel syndrome (IBS) affect millions of people worldwide, impacting quality of life and health outcomes. There is research indicating a healthy gut microbiome can both decrease symptoms and perhaps decrease risk of developing either disease. We are interested in the impact of probiotic supplements, such as kefir, on risk of inflammatory bowel disease and irritable bowel syndrome. Kefir increases the gut microbiome diversity, which is thought to decrease gastrointestinal (GI) disease risk, specifically by decreasing the concentration of c-reactive protein (CRP) levels in an individual. Elevated CRP levels are bio indicators of chronic inflammation and used to diagnose IBD and IBS. We will use a modeling framework to examine the relationship between probiotic supplementation and GI disease risk reduction by finding the optimal kefir intake to increase GI tract microbiome diversity, and the level of microbiome diversity necessary to bring CRP concentrations within a clinically healthy range.
+Inflammatory bowel disease (IBD) and irritable bowel syndrome (IBS) affect millions of people worldwide, impacting quality of life and health outcomes. There is research indicating a healthy gut microbiome can both decrease symptoms and perhaps decrease risk of developing either disease. We are interested in the impact of probiotic supplements, such as kefir, on risk of inflammatory bowel disease and irritable bowel syndrome. Kefir increases the gut microbiome diversity, which is thought to decrease gastrointestinal (GI) disease risk, specifically by decreasing the concentration of c-reactive protein (CRP) levels in an individual. Elevated CRP levels are bio indicators of chronic inflammation and used to diagnose IBD and IBS. We will use a three-part modeling framework to examine GI disease risk: first, identifying the optimal kefir intake to maximize GI tract microbiome diversity; second, determining the level of microbiome diversity necessary to bring CRP concentrations within a clinically healthy range; and third, estimating GI disease risk as a function of CRP alongside genetic risk, demographic factors, and disease activity.
 
 ## Conceptual Model
 
 ## Model Design
 
-Our model consists of 3 submodels, one that will predict microbiome activity based on probiotic supplementation, one that will take that microbiome activity and generate a CRP value, and another submodel that takes the predicted CRP and calculates disease risk.
+Our model consists of 3 submodels, one that will predict GI microbiome diversity based on probiotic supplementation, one that will take that GI microbiome diversity and generate a CRP value, and another submodel that takes the predicted CRP and calculates disease risk.
 
-### ***Microbiome Activity:*** 
+### ***Microbiome Diversity Model:*** 
 
 **Inputs**:
 
@@ -23,7 +23,7 @@ Our model consists of 3 submodels, one that will predict microbiome activity bas
 
 -   Demographic data (age, sex, etc)
 
--   Antiobiotic use
+-   Antibiotic use
 
 -   Calorie intake
 
@@ -31,13 +31,13 @@ Our model consists of 3 submodels, one that will predict microbiome activity bas
 
 **Outputs**:
 
--   Microbe count
+-   Microbe diversity
 
-### ***CRP:***
+### ***CRP Model:***
 
 Inputs:
 
--   Microbiome activity (previous model)
+-   Microbiome diversity (previous model)
 
 -   Demographic data (age, sex, etc)
 
@@ -49,11 +49,11 @@ Outputs:
 
 -   CRP
 
-### ***Disease risk:*** 
+### ***GI Disease Risk Model:*** 
 
 **Inputs**:
 
--   Microbiome activity (from previous model)
+-   Genetic risk
 
 -   CRP (from previous model)
 
@@ -61,19 +61,20 @@ Outputs:
 
 -   Disease activity (if any)
 
+
 **Outputs**:
 
--   Disease risk
+-   GI disease risk
 
-All of these models will be put together in a wrapper to fully calculate disease risk based on probiotic use input. They are all forms of mathematical, deterministic and static models.
+All of these models will be put together in a wrapper to fully calculate GI disease risk based on probiotic use input. They are all forms of mathematical, deterministic and static models.
 
 This hypothetical model was inspired by the work done by Ma et. al. 2021.
 
-In order to test model performance, we will first test the model with a data set (source: Ashwin et. al 2013) consistent of around 400 sample units with information of disease status and diet (fiber, protein, etc) over 26 years. We can input this data set (diet, demographic data, calorie intake, antibiotic use) into our model without including probiotics as a metric, and our output of disease status can be interpolated into risk and should look appropriate.
+In order to test model performance, we will first test the model with a data set (source: Ashwin et. al 2013) consistent of around 400 sample units with information of disease status and diet (fiber, protein, etc) over 26 years. We can input this data set (diet, demographic data, calorie intake, antibiotic use) into our model without including probiotics as a metric, and our output of GI disease status can be interpolated into risk and should look appropriate.
 
 ## Analysis Plan
 
-In order to answer our question of how disease risk is influenced by probiotic supplementation, we would want to implement our model with varying levels of probiotic and first see how disease risk responds. Do we expect CRP to increase exponentially and level off, or perhaps follow a normal growth rate path? We can vary all parameters for every level of probiotic supplementation through sensitivity testing with Sobol to investigate how different demographics may respond differently to probiotic supplementation. We would vary parameters based on literature and data used for validation testing. Sensitivity of each parameter can be visualized individually against disease risk, along with sobol indices produced to assess parameter importance to disease risk. Sampled parameter sets can be visualized as a line graph with probiotic use of the x axis and disease risk on the y axis. Ideally, we will find an optimal probiotic supplementation that provides the best risk reduction.
+In order to answer our question of how GI disease risk is influenced by probiotic supplementation, we would want to implement our model with varying levels of probiotic supplements and first see how disease risk responds. Do we expect CRP to increase exponentially and level off, or perhaps follow a normal growth rate path? We can vary all parameters for every level of probiotic supplementation through sensitivity testing with Sobol to investigate how different demographics may respond differently to probiotic supplementation. We would vary parameters based on literature and data used for validation testing. Sensitivity of each parameter can be visualized individually against GI disease risk, along with sobol indices produced to assess parameter importance to GI disease risk. Sampled parameter sets can be visualized as a line graph with probiotic use of the x axis and disease risk on the y axis. Ideally, we will find an optimal probiotic supplementation that provides the best risk reduction.
 
 ## Assumptions
 
