@@ -70,7 +70,7 @@ Outputs:
 
 **Outputs**:
 
--   GI disease risk: Hazard Ratio
+-   GI disease risk: Risk Ratio, Risk of disease (incidence proportion, attack rate) in group of primary interest divided by Risk of disease (incidence proportion, attack rate) in comparison group
 
 All of these models will be combined into a wrapper to fully calculate GI disease risk based on the input for probiotic use. They are all forms of mathematical, deterministic, and static models.
 
