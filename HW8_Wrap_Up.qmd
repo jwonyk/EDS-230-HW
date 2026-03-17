@@ -18,7 +18,7 @@ Inflammatory bowel disease (IBD) and irritable bowel syndrome (IBS) affect milli
 
 ## Conceptual Model
 
-![Figure 1. A conceptual model showing how microbiome diversity and activity can affect gastrointestinal tract (GI) disease risk. ](image/GI-disease-model.png)
+![A conceptual model showing how microbiome diversity and activity can affect gastrointestinal tract (GI) disease risk.](image/GI-disease-model.png)
 
 ## Model Design
 
