@@ -62,7 +62,7 @@ Outputs:
 
 **Inputs**:
 
--   Microbiome diversity (from previous model)
+-   Genetic risk
 
 -   CRP (from previous model)
 
