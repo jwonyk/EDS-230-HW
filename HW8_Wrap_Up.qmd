@@ -14,7 +14,7 @@ Throughout the environmental data science modeling class at the Bren School of E
 
 ## Modeling Question
 
-Inflammatory bowel disease (IBD) and irritable bowel syndrome (IBS) affect millions of people worldwide, impacting quality of life and health outcomes. There is research indicating that a healthy gut microbiome can both reduce symptoms and perhaps reduce the risk of developing either disease. We are interested in the impact of probiotic supplements, such as kefir, on the risk of inflammatory bowel disease and irritable bowel syndrome. Kefir increases gut microbiome diversity, which is thought to decrease gastrointestinal (GI) disease risk, specifically by lowering C-reactive protein (CRP) levels in an individual. Elevated CRP levels are bioindicators of chronic inflammation and are used to diagnose IBD and IBS. We will use a three-part modeling framework to examine GI disease risk: first, identifying the optimal kefir intake to maximize GI tract microbiome diversity; second, determining the level of microbiome diversity necessary to bring CRP concentrations within a clinically healthy range; and third, estimating GI disease risk as a function of CRP alongside genetic risk, demographic factors, and disease activity.
+Inflammatory bowel disease (IBD) and irritable bowel syndrome (IBS) affect millions of people worldwide, impacting quality of life and health outcomes. There is research indicating that a healthy gut microbiome can both reduce symptoms and perhaps reduce the risk of developing either disease. We are interested in the impact of probiotic supplements, such as kefir, on the risk of inflammatory bowel disease and irritable bowel syndrome. Kefir increases gut microbiome diversity, which is thought to decrease gastrointestinal (GI) disease risk, specifically by lowering C-reactive protein (CRP) levels in an individual. Elevated CRP levels are bioindicators of chronic inflammation and are used to diagnose IBD and IBS. We will use a three-part modeling framework to examine GI disease risk: first, identifying the optimal kefir intake to maximize GI tract microbiome diversity; second, determining the level of microbiome diversity necessary to bring CRP concentrations within a clinically healthy range; and third, estimating GI disease risk as a function of CRP alongside demographic factors, and disease activity.
 
 ## Conceptual Model
 
@@ -28,51 +28,49 @@ Our model consists of 3 submodels: one that predicts microbiome activity based o
 
 **Inputs**:
 
--   Dietary fiber
+-   Dietary fiber: Median total fiber intake (IQR) (g/day)
 
--   Demographic data (age, sex, etc)
+-   Demographic data (age, sex, etc): Age in years, sex as male or female, BMI in kg/m². 
 
--   Antibiotic use
+-   Antibiotic use: (0 = no antibiotic use in past year, 1 = antibiotic use in past year)
 
--   Calorie intake
+-   Calorie intake: Total daily caloric intake (kcal/day)
 
--   Probiotic supplement
+-   Probiotic supplement:  Kefir intake (mL/day)
 
 **Outputs**:
 
--   Microbe diversity
+-   Microbe diversity: Shannon Index (H'), dimensionless, range 0–5
 
 ### ***C-reactive protein (CRP) Model:***
 
 Inputs:
 
--   Microbiome diversity (previous model)
+-   Microbiome diversity (previous model): Shannon Index (H'), dimensionless, range 0–5
 
--   Demographic data (age, sex, etc)
+-   Demographic data (age, sex, etc): Age in years, sex as male or female, BMI in kg/m².
 
--   Antibiotic use
+-   Antibiotic use: (0 = no antibiotic use in past year, 1 = antibiotic use in past year)
 
--   Calorie intake
+-   Calorie intake: Total daily caloric intake (kcal/day)
 
 Outputs:
 
--   CRP
+-   CRP (mg/dL): Milligrams of CRP per deciliter of blood
 
 ### ***GI Disease Risk Model:***
 
 **Inputs**:
 
--   Genetic risk
+-   CRP (from previous model): Milligrams of CRP per deciliter of blood
 
--   CRP (from previous model)
+-   Demographic data (age, sex, etc.):  Age in years, sex as male or female, BMI in kg/m².
 
--   Demographic data (age, sex, etc.)
-
--   Disease activity (if any)
+-   Genetic Risk: (Polygenic Risk Score, z-score)
 
 **Outputs**:
 
--   GI disease risk
+-   GI disease risk: Hazard Ratio
 
 All of these models will be combined into a wrapper to fully calculate GI disease risk based on the input for probiotic use. They are all forms of mathematical, deterministic, and static models.
 
