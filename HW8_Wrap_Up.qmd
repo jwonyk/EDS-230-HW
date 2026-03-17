@@ -24,7 +24,7 @@ Inflammatory bowel disease and irritable bowel syndrome affect millions of peopl
 
 Our model consists of 3 submodels: one that predicts microbiome activity based on probiotic supplementation, one that uses that microbiome activity to generate a *C-reactive protein (CRP)* value, and another that uses the predicted CRP to calculate disease risk.
 
-### ***Microbiome Activity:***
+### ***Microbiome Diversity Model:***
 
 **Inputs**:
 
@@ -32,7 +32,7 @@ Our model consists of 3 submodels: one that predicts microbiome activity based o
 
 -   Demographic data (age, sex, etc)
 
--   Antiobiotic use
+-   Antibiotic use
 
 -   Calorie intake
 
@@ -40,13 +40,13 @@ Our model consists of 3 submodels: one that predicts microbiome activity based o
 
 **Outputs**:
 
--   Microbe count
+-   Microbe diversity
 
-### ***C-reactive protein (CRP):***
+### ***C-reactive protein (CRP) Model:***
 
 Inputs:
 
--   Microbiome activity (previous model)
+-   Microbiome diversity (previous model)
 
 -   Demographic data (age, sex, etc)
 
@@ -58,11 +58,11 @@ Outputs:
 
 -   CRP
 
-### ***Disease risk:***
+### ***GI Disease Risk Model:***
 
 **Inputs**:
 
--   Microbiome activity (from previous model)
+-   Microbiome diversity (from previous model)
 
 -   CRP (from previous model)
 
@@ -72,21 +72,21 @@ Outputs:
 
 **Outputs**:
 
--   Disease risk
+-   GI disease risk
 
-All of these models will be combined into a wrapper to fully calculate disease risk based on the input for probiotic use. They are all forms of mathematical, deterministic, and static models.
+All of these models will be combined into a wrapper to fully calculate GI disease risk based on the input for probiotic use. They are all forms of mathematical, deterministic, and static models.
 
 This hypothetical model was inspired by the work of Ma et al.
 
-To test model performance, we will first evaluate the model using a data set (source: Ananthakrishnan et al) comprising approximately 400 sample units with information on disease status and diet (fiber, protein, etc.) over 26 years. We can input this data set (diet, demographic data, calorie intake, antibiotic use) into our model without including probiotics as a metric, and our output of disease status can be interpolated into risk and should look appropriate.
+To test model performance, we will first evaluate the model using a data set (source: Ananthakrishnan et al) comprising approximately 400 sample units with information on disease status and diet (fiber, protein, etc.) over 26 years. We can input this data set (diet, demographic data, calorie intake, antibiotic use) into our model without including probiotics as a metric, and our output of GI disease status can be interpolated into risk and should look appropriate.
 
 ## Analysis Plan
 
-To answer our question about how disease risk is influenced by probiotic supplementation, we would implement our model with varying levels of probiotics and first see how disease risk responds. Do we expect CRP to increase exponentially and then level off, or perhaps follow a normal growth rate? We can vary all parameters at every level of probiotic supplementation using Sobol sensitivity testing to investigate how different demographics may respond differently to probiotic supplementation. We would vary parameters based on the literature and data used for validation testing. The sensitivity of each parameter can be visualized individually against disease risk, along with Sobol indices that assess each parameter's importance to disease risk. Sampled parameter sets can be visualized as a line graph with probiotic use on the x-axis and disease risk on the y-axis. Ideally, we will find an optimal probiotic supplementation that provides the best risk reduction.
+To answer our question about how GI disease risk is influenced by probiotic supplementation, we would implement our model with varying levels of supplementation and first see how disease risk responds. Do we expect CRP to increase exponentially and then level off, or perhaps follow a normal growth rate? We can vary all parameters at every level of probiotic supplementation using Sobol sensitivity testing to investigate how different demographics may respond differently to probiotic supplementation. We would vary parameters based on the literature and data used for validation testing. The sensitivity of each parameter can be visualized individually against GI disease risk, along with Sobol indices that assess each parameter's importance to GI disease risk. Sampled parameter sets can be visualized as a line graph with probiotic use on the x-axis and disease risk on the y-axis. Ideally, we will find an optimal probiotic supplementation that provides the best risk reduction.
 
 ## Assumptions
 
-We are assuming that the gut microbiome, and ONLY the gut microbiome, is contributing to disease risk reduction. While we include other parameters in our model, ultimately, they all contribute to the gut microbiome, which we assume directly influences disease risk. While there are certainly other factors, they are not included in this model. We are also assuming CRP as a proxy for disease risk. We are not taking into account time factors, such as trends in probiotic use or fluctuations in health/age/disease activity over time, and rather assessing the cumulative impact of probiotics on disease risk. Finally, we are not including any medications taken by those with the disease that may significantly influence disease activity.
+We assume that the gut microbiome, and ONLY the gut microbiome, is contributing to reduced GI disease risk. While we include other parameters in our model, ultimately, they all contribute to the gut microbiome, which we assume directly influences GI disease risk. While there are certainly other factors, they are not included in this model. We are not taking into account time factors, such as trends in probiotic use or fluctuations in health/age/disease activity over time, and rather assessing the cumulative impact of probiotics on GI disease risk. Finally, we are not including any medications taken by those with the GI disease that may significantly influence any activity.
 
 ## Reference
 
